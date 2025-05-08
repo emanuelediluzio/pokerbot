@@ -58,30 +58,30 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center py-8 px-2">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6 sm:p-10">
+    <div className="min-h-screen bg-gradient-to-br from-[#18181c] to-[#23232a] flex items-center justify-center py-8 px-2">
+      <div className="w-full max-w-xl bg-[#23232a] rounded-2xl shadow-2xl p-6 sm:p-10 border border-[#23232a]/60">
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-800 mb-2">Poker Advisor <span className="text-blue-500">AI</span></h1>
-          <p className="text-base text-gray-600">Carica uno screenshot e descrivi la situazione per ricevere consigli strategici</p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2 tracking-tight">Poker Advisor <span className="text-green-400">AI</span></h1>
+          <p className="text-base text-gray-400">Carica uno screenshot e descrivi la situazione per ricevere consigli strategici</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="chat" className="block text-base font-medium text-gray-700 mb-1">Descrizione della situazione</label>
+            <label htmlFor="chat" className="block text-base font-medium text-gray-300 mb-1">Descrizione della situazione</label>
             <textarea
               id="chat"
               value={chat}
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setChat(e.target.value)}
-              className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 text-gray-800"
+              className="w-full min-h-[100px] p-3 border border-[#33334a] bg-[#19191f] rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 text-gray-100 placeholder-gray-500 transition"
               placeholder="Posizione al tavolo, stack, azioni precedenti, ecc..."
               required
             />
           </div>
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">Screenshot della partita</label>
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-blue-200 rounded-lg p-4 bg-blue-50 hover:border-blue-400 transition-colors">
+            <label className="block text-base font-medium text-gray-300 mb-1">Screenshot della partita</label>
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-[#33334a] rounded-xl p-4 bg-[#18181c] hover:border-green-400 transition-colors">
               {preview ? (
                 <div className="relative w-full flex flex-col items-center">
-                  <img src={preview} alt="Preview" className="max-h-48 rounded-lg object-contain" />
+                  <img src={preview} alt="Preview" className="max-h-48 rounded-lg object-contain border border-[#33334a]" />
                   <button
                     type="button"
                     onClick={() => {
@@ -98,7 +98,7 @@ export default function Home() {
               ) : (
                 <>
                   <svg
-                    className="mx-auto h-16 w-16 text-blue-300 mb-2"
+                    className="mx-auto h-14 w-14 text-[#33334a] mb-2"
                     stroke="currentColor"
                     fill="none"
                     viewBox="0 0 48 48"
@@ -109,7 +109,7 @@ export default function Home() {
                     <circle cx="20" cy="20" r="2.5" fill="currentColor" />
                     <path d="M32 16v8m4-4h-8" strokeWidth="3" strokeLinecap="round" />
                   </svg>
-                  <label className="block cursor-pointer text-blue-600 font-medium hover:underline">
+                  <label className="block cursor-pointer text-green-400 font-medium hover:underline">
                     <input
                       type="file"
                       accept="image/*"
@@ -127,7 +127,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={loading || !screen}
-            className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-semibold text-lg shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -143,14 +143,16 @@ export default function Home() {
           </button>
         </form>
         {error && (
-          <div className="mt-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-center text-sm">
+          <div className="mt-6 p-3 bg-red-900/60 border border-red-800 rounded-lg text-red-200 text-center text-sm">
             {error}
           </div>
         )}
         {advice && (
-          <div className="mt-8 bg-blue-50 p-6 rounded-xl shadow-inner">
-            <h2 className="text-xl font-bold text-blue-800 mb-2">Consigli Strategici</h2>
-            <p className="whitespace-pre-wrap text-gray-800 text-base">{advice}</p>
+          <div className="mt-8 flex flex-col items-end gap-4">
+            <div className="bg-[#23232a] border border-[#33334a] rounded-2xl px-5 py-4 max-w-[90%] self-end shadow-lg animate-fade-in">
+              <span className="block text-green-400 font-semibold mb-1">Poker Advisor AI</span>
+              <p className="whitespace-pre-wrap text-gray-100 text-base leading-relaxed">{advice}</p>
+            </div>
           </div>
         )}
       </div>
