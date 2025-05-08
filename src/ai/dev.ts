@@ -1,35 +1,37 @@
-import { Genkit } from '@genkit-ai/ai';
+import { HfInference } from '@huggingface/inference';
 
-if (!process.env.GENKIT_API_KEY) {
-  throw new Error('GENKIT_API_KEY non è configurata nelle variabili d\'ambiente');
-}
-
-const genkit = new Genkit({
-  apiKey: process.env.GENKIT_API_KEY
-});
+const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY || '';
+const hf = new HfInference(HUGGINGFACE_API_KEY);
 
 // Esempio di agente AI per consigli sul poker
 async function pokerAgent(chat: string, screen: string) {
   try {
-    const response = await genkit.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: "Sei un esperto di poker che analizza chat e screenshot per fornire consigli strategici."
-        },
-        {
-          role: "user",
-          content: `Analizza la seguente situazione di poker:\n\nChat: ${chat}\n\nScreen: ${screen}`
-        }
-      ],
-      model: "gpt-4-vision-preview", // o altro modello supportato da Genkit
-      max_tokens: 1000
+    if (!HUGGINGFACE_API_KEY) {
+      return 'API key non configurata. Configura HUGGINGFACE_API_KEY nelle variabili d\'ambiente.';
+    }
+
+    // Utilizziamo il modello mistral-7b-instruct-v0.2 che è ottimo per il ragionamento
+    const response = await hf.textGeneration({
+      model: 'mistralai/Mistral-7B-Instruct-v0.2',
+      inputs: `[INST] Sei un esperto di poker. Analizza la seguente situazione e dai consigli strategici:
+
+Chat: ${chat}
+
+Screen: ${screen}
+
+Dai consigli dettagliati sulla strategia da seguire. [/INST]`,
+      parameters: {
+        max_new_tokens: 1000,
+        temperature: 0.7,
+        top_p: 0.95,
+        repetition_penalty: 1.1
+      }
     });
 
-    return response.choices[0]?.message?.content || 'Nessun consiglio disponibile';
+    return response.generated_text || 'Nessun consiglio disponibile';
   } catch (error) {
     console.error('Errore durante la generazione dei consigli:', error);
-    throw error;
+    return 'Si è verificato un errore durante la generazione dei consigli.';
   }
 }
 

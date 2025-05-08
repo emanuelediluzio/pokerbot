@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
   "env": {
-    "GENKIT_API_KEY": "@genkit_api_key"
+    "HUGGINGFACE_API_KEY": "@huggingface_api_key"
   }
 } 
