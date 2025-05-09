@@ -63,7 +63,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-[#23233a]/60 to-[#10101a]/80 z-0" />
         <div className="relative z-10 p-8 sm:p-12 flex flex-col gap-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-2 tracking-tight drop-shadow-lg">Poker Advisor <span className="text-violet-400">AI</span></h1>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-2 tracking-tight drop-shadow-lg">TEST DESIGN 2024</h1>
             <p className="text-lg text-gray-300 font-light">Carica uno screenshot e descrivi la situazione per ricevere consigli strategici</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-7">
