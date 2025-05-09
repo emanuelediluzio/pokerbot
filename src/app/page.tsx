@@ -8,7 +8,7 @@ type Message = {
   image?: string | null;
 };
 
-const SYSTEM_PROMPT = 'Sei PokerBot, un assistente AI specializzato nell'aiutare gli utenti con domande, strategie e situazioni di poker. Rispondi in modo chiaro, utile e amichevole, anche a domande di logica o curiosità sul gioco.';
+const SYSTEM_PROMPT = "Sei PokerBot, un assistente AI specializzato nell'aiutare gli utenti con domande, strategie e situazioni di poker. Rispondi in modo chiaro, utile e amichevole, anche a domande di logica o curiosità sul gioco.";
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
