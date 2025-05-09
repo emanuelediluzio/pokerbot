@@ -8,14 +8,14 @@ export async function POST(req: Request) {
   }
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/gpt2', {
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/phi-3-mini-128k-instruct', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        inputs: message,
+        inputs: `Rispondi in modo ragionato e dettagliato:\n${message}`,
         parameters: { max_new_tokens: 200, temperature: 0.7 }
       }),
     });
