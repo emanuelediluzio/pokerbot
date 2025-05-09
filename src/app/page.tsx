@@ -15,13 +15,23 @@ export default function Home() {
     if (!input.trim()) return;
     setMessages((msgs) => [...msgs, { role: 'user', content: input }]);
     setLoading(true);
+    const userMessage = input;
     setInput('');
     try {
-      // Simulazione risposta AI (sostituisci con chiamata API reale se vuoi)
-      await new Promise((res) => setTimeout(res, 800));
+      const res = await fetch('/api/chat-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage }),
+      });
+      const data = await res.json();
       setMessages((msgs) => [
         ...msgs,
-        { role: 'assistant', content: `Hai scritto: "${input}". (Qui risponderà l'AI)` }
+        { role: 'assistant', content: data.text || 'Nessuna risposta generata.' }
+      ]);
+    } catch (err) {
+      setMessages((msgs) => [
+        ...msgs,
+        { role: 'assistant', content: 'Errore nella risposta AI.' }
       ]);
     } finally {
       setLoading(false);
