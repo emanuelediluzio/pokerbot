@@ -45,7 +45,13 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chat, screen }),
       });
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        // Se la risposta non è JSON, mostro un errore generico
+        throw new Error('Errore del server: la risposta non è valida. (Forse il file è troppo grande?)');
+      }
       if (!response.ok) {
         throw new Error(data.error || 'Errore durante l\'elaborazione della richiesta');
       }
