@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useRef, FormEvent, ChangeEvent, useEffect } from 'react';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -8,14 +8,21 @@ type Message = {
   image?: string | null;
 };
 
+const SYSTEM_PROMPT = 'Sei PokerBot, un assistente AI specializzato nell’aiutare gli utenti con domande, strategie e situazioni di poker. Rispondi in modo chiaro, utile e amichevole, anche a domande di logica o curiosità sul gioco.';
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Ciao! Sono il tuo assistente AI. Come posso aiutarti?' }
+    { role: 'assistant', content: 'Ciao! Sono PokerBot, il tuo assistente AI per il poker. Come posso aiutarti? Puoi chiedermi strategie, consigli o chiarimenti su mani e situazioni di gioco.' }
   ]);
   const [input, setInput] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
 
   const handleSend = async (e: FormEvent) => {
     e.preventDefault();
@@ -58,14 +65,21 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="flex-1 flex flex-col items-center justify-center px-2 py-8">
-        <div className="w-full max-w-xl bg-gray-900 rounded-3xl shadow-2xl p-6 sm:p-10 flex flex-col gap-4">
-          <h1 className="text-3xl font-bold text-white mb-2 text-center">Chat AI</h1>
-          <div className="flex flex-col gap-3 max-h-[50vh] overflow-y-auto mb-2">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#23243a] via-[#181a25] to-[#10101a] px-2 py-8">
+      <div className="w-full max-w-2xl mx-auto rounded-3xl shadow-2xl bg-[#181a20]/90 border border-[#23263a] flex flex-col justify-between min-h-[70vh] max-h-[90vh] p-0 sm:p-0 relative overflow-hidden backdrop-blur-xl">
+        <div className="flex-1 flex flex-col justify-end p-4 sm:p-8 gap-4 overflow-y-auto" style={{scrollbarWidth:'thin'}}>
+          <h1 className="text-3xl font-extrabold text-white mb-2 text-center drop-shadow-lg">PokerBot AI</h1>
+          <div className="flex flex-col gap-3">
             {messages.map((msg, i) => (
-              <div key={i} className={msg.role === 'user' ? 'self-end' : 'self-start'}>
-                <div className={`px-4 py-2 rounded-2xl text-base max-w-[80vw] sm:max-w-[70%] shadow ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-100'}`}>
+              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div
+                  className={`break-words whitespace-pre-wrap px-5 py-3 rounded-2xl text-base max-w-[80vw] sm:max-w-[70%] shadow transition-all
+                    ${msg.role === 'user'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white self-end rounded-br-md'
+                      : 'bg-[#23263a] text-gray-100 self-start rounded-bl-md border border-[#23263a]'}
+                  `}
+                  style={{wordBreak:'break-word'}}
+                >
                   {msg.content}
                   {msg.image && (
                     <img src={msg.image} alt="user upload" className="mt-2 max-h-40 rounded-xl border border-gray-700" />
@@ -74,39 +88,43 @@ export default function Home() {
               </div>
             ))}
             {loading && (
-              <div className="self-start px-4 py-2 rounded-2xl bg-gray-800 text-gray-400 animate-pulse text-base max-w-[80vw] sm:max-w-[70%] shadow">Sto scrivendo...</div>
+              <div className="flex justify-start">
+                <div className="px-5 py-3 rounded-2xl bg-[#23263a] text-gray-400 animate-pulse text-base max-w-[80vw] sm:max-w-[70%] shadow">Sto scrivendo...</div>
+              </div>
             )}
+            <div ref={chatEndRef} />
           </div>
         </div>
+        <form onSubmit={handleSend} className="w-full flex gap-2 p-4 items-center bg-[#181a20]/80 border-t border-[#23263a]">
+          <input
+            ref={inputRef}
+            type="text"
+            className="flex-1 rounded-2xl px-4 py-3 bg-[#23263a] text-white border border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none text-lg shadow"
+            placeholder="Scrivi una domanda di poker, strategia, logica..."
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            disabled={loading}
+            autoComplete="off"
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+            id="file-upload"
+          />
+          <label htmlFor="file-upload" className="cursor-pointer bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-2xl shadow text-sm">
+            📎
+          </label>
+          <button
+            type="submit"
+            className="rounded-2xl px-6 py-3 bg-blue-600 text-white font-bold text-lg shadow hover:bg-blue-700 transition disabled:opacity-50"
+            disabled={loading || (!input.trim() && !image)}
+          >
+            Invia
+          </button>
+        </form>
       </div>
-      <form onSubmit={handleSend} className="w-full max-w-xl mx-auto flex gap-2 p-4 items-center">
-        <input
-          ref={inputRef}
-          type="text"
-          className="flex-1 rounded-2xl px-4 py-3 bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-blue-500 outline-none text-lg shadow"
-          placeholder="Scrivi un messaggio..."
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          disabled={loading}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="hidden"
-          id="file-upload"
-        />
-        <label htmlFor="file-upload" className="cursor-pointer bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-2xl shadow text-sm">
-          📎
-        </label>
-        <button
-          type="submit"
-          className="rounded-2xl px-6 py-3 bg-blue-600 text-white font-bold text-lg shadow hover:bg-blue-700 transition disabled:opacity-50"
-          disabled={loading || (!input.trim() && !image)}
-        >
-          Invia
-        </button>
-      </form>
     </div>
   );
 } 
