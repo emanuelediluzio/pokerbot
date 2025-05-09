@@ -2,31 +2,38 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   const { message } = await req.json();
-  const apiKey = process.env.HUGGINGFACE_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'API key mancante' }, { status: 500 });
   }
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/bigscience/bloom-560m', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://openrouter.ai/', // opzionale, per leaderboard
+        'X-Title': 'Poker Advisor AI', // opzionale, per leaderboard
       },
       body: JSON.stringify({
-        inputs: message,
-        parameters: { max_new_tokens: 200, temperature: 0.7 }
+        model: 'microsoft/phi-4-reasoning-plus:free',
+        messages: [
+          { role: 'system', content: 'Sei un assistente AI esperto di ragionamento matematico e logico.' },
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 1024
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Errore Hugging Face:', errorText);
+      console.error('Errore OpenRouter:', errorText);
       return NextResponse.json({ error: 'Errore dalla AI', details: errorText }, { status: 500 });
     }
     const data = await response.json();
-    const text = data?.[0]?.generated_text || 'Nessuna risposta generata.';
+    const text = data.choices?.[0]?.message?.content || 'Nessuna risposta generata.';
     return NextResponse.json({ text });
   } catch (err) {
     console.error('Errore generale:', err);
