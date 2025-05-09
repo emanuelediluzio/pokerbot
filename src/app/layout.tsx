@@ -14,10 +14,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="it">
-      <body>
-        <main className="container mx-auto px-4 py-8">
-          {children}
-        </main>
+      <body className="bg-black text-white min-h-screen w-full">
+        {children}
       </body>
     </html>
   );
