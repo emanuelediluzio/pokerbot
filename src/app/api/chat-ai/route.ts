@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { message } = await req.json();
+  const { message, image } = await req.json();
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'API key mancante' }, { status: 500 });
   }
 
   try {
+    const userContent = [];
+    if (message) userContent.push({ type: 'text', text: message });
+    if (image) userContent.push({ type: 'image_url', image_url: { url: image } });
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -20,7 +24,7 @@ export async function POST(req: Request) {
         model: 'deepseek/deepseek-chat-v3-0324:free',
         messages: [
           { role: 'system', content: 'Sei un assistente AI esperto di ragionamento matematico e logico.' },
-          { role: 'user', content: message }
+          { role: 'user', content: userContent }
         ],
         temperature: 0.7,
         max_tokens: 1024
