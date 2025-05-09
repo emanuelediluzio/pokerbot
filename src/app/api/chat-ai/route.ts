@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         'X-Title': 'Poker Advisor AI', // opzionale, per leaderboard
       },
       body: JSON.stringify({
-        model: 'microsoft/phi-4-reasoning-plus:free',
+        model: 'deepseek/deepseek-chat-v3-0324:free',
         messages: [
           { role: 'system', content: 'Sei un assistente AI esperto di ragionamento matematico e logico.' },
           { role: 'user', content: message }
