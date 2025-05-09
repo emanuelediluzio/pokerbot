@@ -58,12 +58,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#181a20] via-[#23263a] to-[#10101a] py-8 px-2">
-      <div className="w-full max-w-xl mx-auto rounded-3xl shadow-2xl bg-[#181a20]/90 border border-[#23263a] relative overflow-hidden backdrop-blur-xl p-8 sm:p-12 flex flex-col gap-8">
-        <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-2 tracking-tight drop-shadow-lg">Poker Advisor AI</h1>
-          <p className="text-lg text-gray-400 font-light">Carica uno screenshot e descrivi la situazione per ricevere consigli strategici</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="bg-gray-900 rounded-3xl shadow-2xl p-10 max-w-lg w-full text-white">
+        <h1 className="text-4xl font-bold mb-4">Poker Advisor AI</h1>
+        <p className="mb-6 text-gray-300">Carica uno screenshot e descrivi la situazione per ricevere consigli strategici</p>
         <form onSubmit={handleSubmit} className="space-y-7">
           <div>
             <label htmlFor="chat" className="block text-base font-semibold text-gray-200 mb-2">Descrizione della situazione</label>
