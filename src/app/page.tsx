@@ -58,13 +58,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#10101a] via-[#181825] to-[#23233a] flex items-center justify-center py-8 px-2">
-      <div className="w-full max-w-2xl mx-auto rounded-3xl shadow-2xl p-0 sm:p-0 relative overflow-hidden" style={{backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)'}}>
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-[#23233a]/60 to-[#10101a]/80 z-0" />
+    <div className="min-h-screen w-full bg-gradient-to-br from-[#181a20] via-[#23263a] to-[#10101a] flex items-center justify-center py-8 px-2">
+      <div className="w-full max-w-xl mx-auto rounded-3xl shadow-2xl bg-[#181a20]/90 border border-[#23263a] relative overflow-hidden backdrop-blur-xl">
         <div className="relative z-10 p-8 sm:p-12 flex flex-col gap-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-2 tracking-tight drop-shadow-lg">TEST DESIGN 2024</h1>
-            <p className="text-lg text-gray-300 font-light">Carica uno screenshot e descrivi la situazione per ricevere consigli strategici</p>
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-2 tracking-tight drop-shadow-lg">Poker Advisor AI</h1>
+            <p className="text-lg text-gray-400 font-light">Carica uno screenshot e descrivi la situazione per ricevere consigli strategici</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-7">
             <div>
@@ -73,17 +72,17 @@ export default function Home() {
                 id="chat"
                 value={chat}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setChat(e.target.value)}
-                className="w-full min-h-[110px] p-4 border-none bg-white/5 rounded-2xl focus:ring-2 focus:ring-violet-400 text-gray-100 placeholder-gray-400 text-lg shadow-inner transition"
+                className="w-full min-h-[110px] p-4 border border-[#23263a] bg-[#23263a]/60 rounded-2xl focus:ring-2 focus:ring-green-400 text-gray-100 placeholder-gray-500 text-lg shadow-inner transition"
                 placeholder="Posizione al tavolo, stack, azioni precedenti, ecc..."
                 required
               />
             </div>
             <div>
               <label className="block text-base font-semibold text-gray-200 mb-2">Screenshot della partita</label>
-              <div className="flex flex-col items-center justify-center border-2 border-dashed border-violet-500/30 rounded-2xl p-6 bg-white/5 hover:border-violet-400 transition-colors">
+              <div className="flex flex-col items-center justify-center border-2 border-dashed border-green-500/30 rounded-2xl p-6 bg-[#23263a]/40 hover:border-green-400 transition-colors">
                 {preview ? (
                   <div className="relative w-full flex flex-col items-center">
-                    <img src={preview} alt="Preview" className="max-h-52 rounded-xl object-contain border border-violet-500/20 shadow-lg" />
+                    <img src={preview} alt="Preview" className="max-h-52 rounded-xl object-contain border border-green-500/20 shadow-lg" />
                     <button
                       type="button"
                       onClick={() => {
@@ -100,7 +99,7 @@ export default function Home() {
                 ) : (
                   <>
                     <svg
-                      className="mx-auto h-14 w-14 text-violet-500/40 mb-2"
+                      className="mx-auto h-14 w-14 text-green-500/40 mb-2"
                       stroke="currentColor"
                       fill="none"
                       viewBox="0 0 48 48"
@@ -111,7 +110,7 @@ export default function Home() {
                       <circle cx="20" cy="20" r="2.5" fill="currentColor" />
                       <path d="M32 16v8m4-4h-8" strokeWidth="3" strokeLinecap="round" />
                     </svg>
-                    <label className="block cursor-pointer text-violet-300 font-medium hover:underline">
+                    <label className="block cursor-pointer text-green-300 font-medium hover:underline">
                       <input
                         type="file"
                         accept="image/*"
@@ -121,7 +120,7 @@ export default function Home() {
                       />
                       Carica un file o trascina qui
                     </label>
-                    <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF fino a 5MB</p>
+                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF fino a 5MB</p>
                   </>
                 )}
               </div>
@@ -129,7 +128,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={loading || !screen}
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-violet-500 via-blue-500 to-green-400 hover:from-violet-600 hover:to-green-500 text-white font-bold text-lg shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-violet-400"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-green-500 via-blue-500 to-violet-500 hover:from-green-600 hover:to-violet-600 text-white font-bold text-lg shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-400"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -151,10 +150,10 @@ export default function Home() {
           )}
           {advice && (
             <div className="mt-8 flex flex-col items-end gap-4">
-              <div className="bg-gradient-to-br from-violet-700/80 via-[#23233a] to-blue-900/80 border border-violet-500/30 rounded-3xl px-6 py-5 max-w-[90%] self-end shadow-2xl animate-fade-in backdrop-blur-md relative">
-                <span className="block text-violet-300 font-semibold mb-1">Poker Advisor AI</span>
+              <div className="bg-gradient-to-br from-green-700/80 via-[#23263a] to-blue-900/80 border border-green-500/30 rounded-3xl px-6 py-5 max-w-[90%] self-end shadow-2xl animate-fade-in backdrop-blur-md relative">
+                <span className="block text-green-300 font-semibold mb-1">Poker Advisor AI</span>
                 <p className="whitespace-pre-wrap text-gray-100 text-lg leading-relaxed drop-shadow-lg">{advice}</p>
-                <span className="absolute -top-3 right-6 w-4 h-4 bg-violet-400 rounded-full blur-sm opacity-40 animate-pulse" />
+                <span className="absolute -top-3 right-6 w-4 h-4 bg-green-400 rounded-full blur-sm opacity-40 animate-pulse" />
               </div>
             </div>
           )}
