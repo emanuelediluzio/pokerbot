@@ -8,7 +8,7 @@ type Message = {
   image?: string | null;
 };
 
-const SYSTEM_PROMPT = 'Sei PokerBot, un assistente AI specializzato nell’aiutare gli utenti con domande, strategie e situazioni di poker. Rispondi in modo chiaro, utile e amichevole, anche a domande di logica o curiosità sul gioco.';
+const SYSTEM_PROMPT = 'Sei PokerBot, un assistente AI specializzato nell'aiutare gli utenti con domande, strategie e situazioni di poker. Rispondi in modo chiaro, utile e amichevole, anche a domande di logica o curiosità sul gioco.';
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
@@ -57,9 +57,35 @@ export default function Home() {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const img = new window.Image();
     const reader = new FileReader();
     reader.onload = (ev) => {
-      setImage(ev.target?.result as string);
+      img.onload = () => {
+        // Calcola nuove dimensioni
+        const maxDim = 800;
+        let { width, height } = img;
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        // Ridimensiona su canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        // Converte in JPEG qualità 0.7
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        setImage(dataUrl);
+      };
+      img.src = ev.target?.result as string;
     };
     reader.readAsDataURL(file);
   };
