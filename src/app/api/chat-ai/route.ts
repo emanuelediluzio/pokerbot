@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   const { message, image, pdf } = await req.json();
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  // API key fornita dall'utente
+  const apiKey = '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';
   if (!apiKey) {
     return NextResponse.json({ error: 'API key mancante' }, { status: 500 });
   }
@@ -22,13 +23,16 @@ export async function POST(req: Request) {
         'X-Title': 'Poker Advisor AI', // opzionale, per leaderboard
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat-v3-0324:free',
+        model: 'nousresearch/deephermes-3-mistral-24b-preview:free',
         messages: [
-          { role: 'system', content: 'Sei un assistente AI esperto di ragionamento matematico e logico.' },
+          {
+            role: 'system',
+            content: 'You are a deep thinking AI, you may use extremely long chains of thought to deeply consider the problem and deliberate with yourself via systematic reasoning processes to help come to a correct solution prior to answering. You should enclose your thoughts and internal monologue inside <think> </think> tags, and then provide your solution or response to the problem.'
+          },
           { role: 'user', content: userContent }
         ],
         temperature: 0.7,
-        max_tokens: 1024
+        max_tokens: 2048
       }),
     });
 
