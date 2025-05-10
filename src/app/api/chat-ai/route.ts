@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   const { message, image, pdf } = await req.json();
   // API key fornita dall'utente
-  const apiKey = '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';
+  const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'API key mancante' }, { status: 500 });
   }
