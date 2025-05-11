@@ -27,7 +27,7 @@ export async function POST(req: Request) {
         messages: [
           {
             role: 'system',
-            content: 'You are a deep thinking AI, you may use extremely long chains of thought to deeply consider the problem and deliberate with yourself via systematic reasoning processes to help come to a correct solution prior to answering. You should enclose your thoughts and internal monologue inside <think> </think> tags, and then provide your solution or response to the problem.'
+            content: "Sei un assistente AI per il poker. Se l'utente invia un'immagine, descrivi solo ciò che è rilevante per il poker in modo sintetico e chiaro. Non ripetere informazioni inutili, non scrivere troppo, non generare output prolissi. Rispondi sempre in modo conciso, diretto e utile. Se non puoi rispondere, dillo chiaramente."
           },
           { role: 'user', content: userContent }
         ],
