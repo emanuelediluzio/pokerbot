@@ -19,7 +19,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const [currentMsgIndex, setCurrentMsgIndex] = useState<number | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -98,12 +99,28 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#23243a] via-[#181a25] to-[#10101a] px-2 py-8">
-      <div className="w-full max-w-2xl mx-auto rounded-3xl shadow-2xl bg-[#181a20]/90 border border-[#23263a] flex flex-col justify-between min-h-[70vh] max-h-[90vh] p-0 sm:p-0 relative overflow-hidden backdrop-blur-xl">
-        <div className="flex-1 flex flex-col justify-end p-4 sm:p-8 gap-4 overflow-y-auto" style={{scrollbarWidth:'thin'}}>
+      <div className="w-full max-w-2xl mx-auto rounded-3xl shadow-2xl bg-[#181a20]/90 border border-[#23263a] flex flex-row min-h-[70vh] max-h-[90vh] p-0 sm:p-0 relative overflow-hidden backdrop-blur-xl">
+        {/* Sidebar messaggi */}
+        <div className="w-20 sm:w-32 bg-[#181a25] border-r border-[#23263a] flex flex-col items-center py-4 gap-2 overflow-y-auto">
+          {messages.map((msg, i) => (
+            <button
+              key={i}
+              className={`w-14 sm:w-28 truncate text-xs sm:text-sm px-2 py-1 rounded-lg mb-1 transition-all ${msg.role === 'user' ? 'bg-blue-900 text-blue-200' : 'bg-gray-800 text-gray-200'} hover:bg-blue-700 hover:text-white`}
+              onClick={() => {
+                messageRefs.current[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }}
+              title={msg.role === 'user' ? 'Utente' : 'AI'}
+            >
+              {msg.role === 'user' ? '👤 ' : '🤖 '} {msg.content.slice(0, 18)}{msg.content.length > 18 ? '…' : ''}
+            </button>
+          ))}
+        </div>
+        {/* Chat principale */}
+        <div ref={chatContainerRef} className="flex-1 flex flex-col justify-end p-4 sm:p-8 gap-4 overflow-y-auto" style={{scrollbarWidth:'thin'}}>
           <h1 className="text-3xl font-extrabold text-white mb-2 text-center drop-shadow-lg">PokerBot AI</h1>
           <div className="flex flex-col gap-3">
-            {(currentMsgIndex === null ? messages : [messages[currentMsgIndex]]).map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            {messages.map((msg, i) => (
+              <div key={i} ref={el => { messageRefs.current[i] = el; }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
                   className={`break-words whitespace-pre-wrap px-5 py-3 rounded-2xl text-base max-w-[80vw] sm:max-w-[70%] shadow transition-all
                     ${msg.role === 'user'
@@ -126,34 +143,6 @@ export default function Home() {
             )}
             <div ref={chatEndRef} />
           </div>
-        </div>
-        {/* Slider messaggi */}
-        <div className="flex justify-center gap-4 py-2 bg-transparent">
-          <button
-            className="px-4 py-2 bg-gray-700 text-white rounded-xl disabled:opacity-40"
-            onClick={() => setCurrentMsgIndex(idx => (idx === null ? messages.length - 2 : Math.max(0, idx - 1)))}
-            disabled={messages.length <= 1 || (currentMsgIndex !== null && currentMsgIndex === 0)}
-          >
-            ◀ Precedente
-          </button>
-          <button
-            className="px-4 py-2 bg-gray-700 text-white rounded-xl disabled:opacity-40"
-            onClick={() => setCurrentMsgIndex(idx => {
-              if (idx === null) return 1;
-              if (idx < messages.length - 1) return idx + 1;
-              return idx;
-            })}
-            disabled={messages.length <= 1 || (currentMsgIndex !== null && currentMsgIndex >= messages.length - 1)}
-          >
-            Successivo ▶
-          </button>
-          <button
-            className="px-4 py-2 bg-blue-700 text-white rounded-xl disabled:opacity-40"
-            onClick={() => setCurrentMsgIndex(null)}
-            disabled={currentMsgIndex === null}
-          >
-            Tutti
-          </button>
         </div>
         <form onSubmit={handleSend} className="w-full flex gap-2 p-4 items-center bg-[#181a20]/80 border-t border-[#23263a]">
           <input
