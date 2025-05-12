@@ -123,7 +123,7 @@ export default function Home() {
             {messages.map((msg, i) => (
               <div key={i} ref={el => { messageRefs.current[i] = el; }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`break-words whitespace-pre-line px-5 py-3 rounded-2xl text-base max-w-full sm:max-w-2xl shadow transition-all
+                  className={`break-words whitespace-pre-line px-5 py-3 rounded-2xl text-base max-w-[80%] sm:max-w-[70%] shadow transition-all
                     ${msg.role === 'user'
                       ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white self-end rounded-br-md'
                       : 'bg-[#23263a] text-gray-100 self-start rounded-bl-md border border-[#23263a]'}
