@@ -23,11 +23,11 @@ export async function POST(req: Request) {
         'X-Title': 'Poker Advisor AI', // opzionale, per leaderboard
       },
       body: JSON.stringify({
-        model: 'nousresearch/deephermes-3-mistral-24b-preview:free',
+        model: 'anthropic/claude-3-sonnet:20240229',
         messages: [
           {
             role: 'system',
-            content: "Sei un assistente AI per il poker. Se l'utente invia un'immagine, descrivi solo ciò che è rilevante per il poker in modo sintetico e chiaro, massimo 5-6 frasi. Non ripetere informazioni inutili, non scrivere troppo, non generare output prolissi. Rispondi sempre in modo conciso, diretto e utile. Se non puoi rispondere, dillo chiaramente."
+            content: "Sei PokerBot, un assistente AI esperto di poker. Se l'utente invia un'immagine, descrivi solo ciò che è rilevante per il poker in modo sintetico e chiaro, massimo 5-6 frasi. Descrivi le carte, i tavoli, le strategie o situazioni di gioco che vedi. Non ripetere informazioni inutili, non scrivere troppo. Se non puoi rispondere o non vedi nulla di rilevante per il poker nell'immagine, dillo chiaramente."
           },
           { role: 'user', content: userContent }
         ],
