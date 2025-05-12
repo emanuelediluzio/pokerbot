@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { message } = await req.json();
+  const { message, image } = await req.json();
   // API key fornita dall'utente
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -9,6 +9,36 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Se c'è un'immagine, usa LLaVA (modello multimodale)
+    // Altrimenti usa Mixtral (modello solo testo)
+    const model = image ? 'llava/llava-v1.6-34b:free' : 'mistralai/mixtral-8x7b-instruct:free';
+    
+    // Costruisci il messaggio in base alla presenza dell'immagine
+    const messages = image 
+      ? [
+          {
+            role: 'system',
+            content: "Sei PokerBot, un assistente AI esperto di poker. Se l'utente invia un'immagine, descrivi solo ciò che è rilevante per il poker: carte, tavoli, strategie visibili. Rispondi in modo sintetico e chiaro, massimo 5-6 frasi. Se non vedi contenuti relativi al poker nell'immagine, dillo semplicemente."
+          },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: message || "Cosa vedi in questa immagine di poker?" },
+              { type: 'image_url', image_url: { url: image } }
+            ]
+          }
+        ]
+      : [
+          {
+            role: 'system',
+            content: "Sei PokerBot, un assistente AI esperto di poker. Rispondi in modo sintetico e chiaro, massimo 5-6 frasi."
+          },
+          { 
+            role: 'user', 
+            content: message || "Ciao, sono qui per parlare di poker."
+          }
+        ];
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -18,17 +48,8 @@ export async function POST(req: Request) {
         'X-Title': 'Poker Advisor AI',
       },
       body: JSON.stringify({
-        model: 'mistralai/mixtral-8x7b-instruct:free',
-        messages: [
-          {
-            role: 'system',
-            content: "Sei PokerBot, un assistente AI esperto di poker. Rispondi in modo sintetico e chiaro, massimo 5-6 frasi. Non ripetere informazioni inutili, non scrivere troppo. Se non puoi rispondere, dillo chiaramente."
-          },
-          { 
-            role: 'user', 
-            content: message || "Ciao, sono qui per parlare di poker."
-          }
-        ],
+        model,
+        messages,
         temperature: 0.7,
         max_tokens: 2048
       }),
@@ -39,6 +60,7 @@ export async function POST(req: Request) {
       console.error('Errore OpenRouter:', errorText);
       return NextResponse.json({ error: 'Errore dalla AI', details: errorText }, { status: 500 });
     }
+    
     const data = await response.json();
     const text = data.choices?.[0]?.message?.content || 'Nessuna risposta generata.';
     return NextResponse.json({ text });
