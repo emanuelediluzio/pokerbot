@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         'X-Title': 'Poker Advisor AI', // opzionale, per leaderboard
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-3-sonnet:20240229',
+        model: 'google/gemini-pro-vision:free',
         messages: [
           {
             role: 'system',
