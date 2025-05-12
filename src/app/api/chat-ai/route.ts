@@ -9,9 +9,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Se c'è un'immagine, usa LLaVA (modello multimodale)
+    // Se c'è un'immagine, usa InternVL3 14B (modello multimodale gratuito)
     // Altrimenti usa Mixtral (modello solo testo)
-    const model = image ? 'llava/llava-v1.6-34b:free' : 'mistralai/mixtral-8x7b-instruct:free';
+    const model = image ? 'opengvlab/internvl3-14b:free' : 'mistralai/mixtral-8x7b-instruct:free';
     
     // Costruisci il messaggio in base alla presenza dell'immagine
     const messages = image 
