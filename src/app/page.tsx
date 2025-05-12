@@ -101,17 +101,18 @@ export default function Home() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#23243a] via-[#181a25] to-[#10101a] px-2 py-8">
       <div className="w-full max-w-2xl mx-auto rounded-3xl shadow-2xl bg-[#181a20]/90 border border-[#23263a] flex flex-row min-h-[70vh] max-h-[90vh] p-0 sm:p-0 relative overflow-hidden backdrop-blur-xl">
         {/* Sidebar messaggi */}
-        <div className="w-20 sm:w-32 bg-[#181a25] border-r border-[#23263a] flex flex-col items-center py-4 gap-2 overflow-y-auto">
+        <div className="w-48 sm:w-56 bg-[#181a25] border-r border-[#23263a] flex flex-col items-center py-4 gap-2 overflow-y-auto">
           {messages.map((msg, i) => (
             <button
               key={i}
-              className={`w-14 sm:w-28 truncate text-xs sm:text-sm px-2 py-1 rounded-lg mb-1 transition-all ${msg.role === 'user' ? 'bg-blue-900 text-blue-200' : 'bg-gray-800 text-gray-200'} hover:bg-blue-700 hover:text-white`}
+              className={`w-full text-left whitespace-nowrap overflow-hidden text-ellipsis text-xs sm:text-sm px-3 py-2 rounded-lg mb-1 transition-all flex items-center gap-2 ${msg.role === 'user' ? 'bg-blue-900 text-blue-200' : 'bg-gray-800 text-gray-200'} hover:bg-blue-700 hover:text-white`}
               onClick={() => {
                 messageRefs.current[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
               }}
               title={msg.role === 'user' ? 'Utente' : 'AI'}
             >
-              {msg.role === 'user' ? '👤 ' : '🤖 '} {msg.content.slice(0, 18)}{msg.content.length > 18 ? '…' : ''}
+              <span className="text-lg">{msg.role === 'user' ? '👤' : '🤖'}</span>
+              <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{msg.content.replace(/\n/g, ' ').slice(0, 40)}{msg.content.length > 40 ? '…' : ''}</span>
             </button>
           ))}
         </div>
