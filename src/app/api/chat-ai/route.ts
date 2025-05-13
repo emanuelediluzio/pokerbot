@@ -9,9 +9,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Se c'è un'immagine, usa InternVL3 14B (modello multimodale gratuito)
+    // Se c'è un'immagine, usa Phi-3-vision (modello multimodale gratuito)
     // Altrimenti usa Mixtral (modello solo testo)
-    const model = image ? 'opengvlab/internvl3-14b:free' : 'mistralai/mixtral-8x7b-instruct:free';
+    const model = image ? 'microsoft/phi-3-vision-128k-instruct:free' : 'mistralai/mixtral-8x7b-instruct:free';
     
     // Costruisci il messaggio in base alla presenza dell'immagine
     const messages = image 
