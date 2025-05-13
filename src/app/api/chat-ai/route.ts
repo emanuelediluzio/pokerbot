@@ -1,20 +1,33 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { message, image } = await req.json();
-  // API key fornita dall'utente
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ error: 'API key mancante' }, { status: 500 });
-  }
-
   try {
+    const { message, image } = await req.json();
+    // API key fornita dall'utente
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      console.error('API key mancante');
+      return NextResponse.json({ error: 'API key mancante' }, { status: 500 });
+    }
+
     // Ottieni il modello da variabile d'ambiente o usa il default
     const defaultModelText = process.env.DEFAULT_TEXT_MODEL || 'mistralai/mixtral-8x7b-instruct:free';
     const defaultModelVision = process.env.DEFAULT_VISION_MODEL || 'microsoft/phi-3-vision-128k-instruct:free';
     
-    // Supporto per Llama 4 Maverick
-    const useLlama4 = process.env.USE_LLAMA4 === 'true';
+    // Per debug
+    console.log('Variabili ambiente: ', {
+      defaultModelText,
+      defaultModelVision,
+      useLlama4: process.env.USE_LLAMA4
+    });
+    
+    // Supporto per Llama 4 Maverick - verifica variabile in modo sicuro
+    let useLlama4 = false;
+    try {
+      useLlama4 = process.env.USE_LLAMA4 === 'true';
+    } catch (err) {
+      console.log('Errore parsing USE_LLAMA4:', err);
+    }
     
     // Se c'è un'immagine, usa un modello di visione, altrimenti usa un modello solo testo
     const model = image 
