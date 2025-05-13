@@ -9,9 +9,17 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Se c'è un'immagine, usa Phi-3-vision (modello multimodale gratuito)
-    // Altrimenti usa Mixtral (modello solo testo)
-    const model = image ? 'microsoft/phi-3-vision-128k-instruct:free' : 'mistralai/mixtral-8x7b-instruct:free';
+    // Ottieni il modello da variabile d'ambiente o usa il default
+    const defaultModelText = process.env.DEFAULT_TEXT_MODEL || 'mistralai/mixtral-8x7b-instruct:free';
+    const defaultModelVision = process.env.DEFAULT_VISION_MODEL || 'microsoft/phi-3-vision-128k-instruct:free';
+    
+    // Supporto per Llama 4 Maverick
+    const useLlama4 = process.env.USE_LLAMA4 === 'true';
+    
+    // Se c'è un'immagine, usa un modello di visione, altrimenti usa un modello solo testo
+    const model = image 
+      ? defaultModelVision 
+      : (useLlama4 ? 'meta-llama/llama-4-17b-maverick:free' : defaultModelText);
     
     // Costruisci il messaggio in base alla presenza dell'immagine
     const messages = image 
@@ -39,6 +47,8 @@ export async function POST(req: Request) {
           }
         ];
 
+    console.log(`Usando il modello: ${model}`);
+    
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
