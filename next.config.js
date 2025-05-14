@@ -17,9 +17,11 @@ const nextConfig = {
       },
     ],
   },
-  api: {
-    bodyParser: {
-      sizeLimit: '20mb',
+  // Configurazione per i limiti delle richieste API (in kB)
+  experimental: {
+    serverComponentsExternalPackages: [],
+    serverActions: {
+      bodySizeLimit: '20mb',
     },
   },
 };
