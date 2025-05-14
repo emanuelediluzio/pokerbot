@@ -1,9 +1,23 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 export async function POST(req: Request) {
   try {
-    const { message, image } = await req.json();
-    // API key fornita dall'utente
+    // Validazione input
+    let message = "";
+    let image = null;
+    
+    try {
+      const body = await req.json();
+      message = body.message || "";
+      image = body.image || null;
+    } catch (e) {
+      console.error('Errore parsing JSON:', e);
+      return NextResponse.json({ error: 'Formato richiesta non valido' }, { status: 400 });
+    }
+    
+    // API key
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       console.error('API key mancante');
@@ -62,31 +76,36 @@ export async function POST(req: Request) {
 
     console.log(`Usando il modello: ${model}`);
     
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://openrouter.ai/',
-        'X-Title': 'Poker Advisor AI',
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-        temperature: 0.7,
-        max_tokens: 2048
-      }),
-    });
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://openrouter.ai/',
+          'X-Title': 'Poker Advisor AI',
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          temperature: 0.7,
+          max_tokens: 2048
+        }),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Errore OpenRouter:', errorText);
-      return NextResponse.json({ error: 'Errore dalla AI', details: errorText }, { status: 500 });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Errore OpenRouter:', errorText);
+        return NextResponse.json({ error: 'Errore dalla AI', details: errorText }, { status: 500 });
+      }
+      
+      const data = await response.json();
+      const text = data.choices?.[0]?.message?.content || 'Nessuna risposta generata.';
+      return NextResponse.json({ text });
+    } catch (apiErr) {
+      console.error('Errore chiamata API:', apiErr);
+      return NextResponse.json({ error: 'Errore di connessione API', details: String(apiErr) }, { status: 503 });
     }
-    
-    const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || 'Nessuna risposta generata.';
-    return NextResponse.json({ text });
   } catch (err) {
     console.error('Errore generale:', err);
     return NextResponse.json({ error: 'Errore interno', details: String(err) }, { status: 500 });

@@ -58,9 +58,18 @@ export default function Home() {
     if (!input.trim() && !image) return;
     
     const timestamp = new Date();
-    setMessages((msgs) => [...msgs, { role: 'user', content: input, image, timestamp }]);
+    const userContent = input.trim();
+    const userImage = image;
+    
+    // Aggiorniamo lo stato in modo più sicuro
+    setMessages((prevMessages) => [...prevMessages, { 
+      role: 'user', 
+      content: userContent, 
+      image: userImage, 
+      timestamp 
+    }]);
+    
     setLoading(true);
-    const userMessage = input;
     setInput('');
     setImage(null);
     
@@ -68,7 +77,11 @@ export default function Home() {
       const res = await fetch('/api/chat-ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage, image }),
+        body: JSON.stringify({ 
+          message: userContent,
+          image: userImage
+        }),
+        cache: 'no-store'
       });
       
       if (!res.ok) {
@@ -76,19 +89,32 @@ export default function Home() {
       }
       
       const data = await res.json();
-      setMessages((msgs) => [
-        ...msgs,
-        { role: 'assistant', content: data.text || 'Nessuna risposta generata.', timestamp: new Date() }
+      
+      // Aggiorniamo i messaggi dopo aver ricevuto la risposta
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { 
+          role: 'assistant', 
+          content: data.text || 'Nessuna risposta generata.', 
+          timestamp: new Date() 
+        }
       ]);
     } catch (err) {
       console.error('Error:', err);
-      setMessages((msgs) => [
-        ...msgs,
-        { role: 'assistant', content: 'Errore nella risposta AI. Riprova più tardi.', timestamp: new Date() }
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { 
+          role: 'assistant', 
+          content: 'Errore nella risposta AI. Riprova più tardi.', 
+          timestamp: new Date() 
+        }
       ]);
     } finally {
       setLoading(false);
-      inputRef.current?.focus();
+      // Focus solo se l'elemento esiste
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
   };
 
@@ -103,40 +129,52 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    const img = new window.Image();
-    const reader = new FileReader();
-    
-    reader.onload = (ev) => {
-      img.onload = () => {
-        // Resize large images
-        const maxDim = 800;
-        let { width, height } = img;
+    try {
+      const img = new window.Image();
+      const reader = new FileReader();
+      
+      reader.onload = (ev) => {
+        if (!ev.target?.result) return;
         
-        if (width > maxDim || height > maxDim) {
-          if (width > height) {
-            height = Math.round((height * maxDim) / width);
-            width = maxDim;
-          } else {
-            width = Math.round((width * maxDim) / height);
-            height = maxDim;
+        img.onload = () => {
+          try {
+            // Resize large images
+            const maxDim = 800;
+            let { width, height } = img;
+            
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              // Convert to JPEG at 70% quality
+              const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+              setImage(dataUrl);
+            }
+          } catch (error) {
+            console.error('Errore durante il ridimensionamento dell\'immagine:', error);
           }
-        }
+        };
         
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-        
-        // Convert to JPEG at 70% quality
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        setImage(dataUrl);
+        img.src = ev.target.result as string;
       };
       
-      img.src = ev.target?.result as string;
-    };
-    
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Errore durante la lettura del file:', error);
+    }
   };
   
   // Get the first few messages for sidebar preview
