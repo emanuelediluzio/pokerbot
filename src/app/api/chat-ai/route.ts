@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
@@ -17,6 +18,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Formato richiesta non valido' }, { status: 400 });
     }
     
+    // Logging di debug
+    console.log('Richiesta ricevuta:', { message, hasImage: !!image });
+    
     // API key
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
@@ -24,29 +28,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'API key mancante' }, { status: 500 });
     }
 
-    // Ottieni il modello da variabile d'ambiente o usa il default
-    const defaultModelText = process.env.DEFAULT_TEXT_MODEL || 'mistralai/mixtral-8x7b-instruct:free';
-    const defaultModelVision = process.env.DEFAULT_VISION_MODEL || 'microsoft/phi-3-vision-128k-instruct:free';
-    
-    // Per debug
-    console.log('Variabili ambiente: ', {
-      defaultModelText,
-      defaultModelVision,
-      useLlama4: process.env.USE_LLAMA4
-    });
-    
-    // Supporto per Llama 4 Maverick - verifica variabile in modo sicuro
-    let useLlama4 = false;
-    try {
-      useLlama4 = process.env.USE_LLAMA4 === 'true';
-    } catch (err) {
-      console.log('Errore parsing USE_LLAMA4:', err);
-    }
-    
-    // Se c'è un'immagine, usa un modello di visione, altrimenti usa un modello solo testo
+    // Usa sempre Mixtral come modello di base per text
     const model = image 
-      ? defaultModelVision 
-      : (useLlama4 ? 'meta-llama/llama-4-17b-maverick:free' : defaultModelText);
+      ? 'microsoft/phi-3-vision-128k-instruct:free'
+      : 'mistralai/mixtral-8x7b-instruct:free';
+    
+    console.log(`Usando il modello: ${model}`);
     
     // Costruisci il messaggio in base alla presenza dell'immagine
     const messages = image 
@@ -74,9 +61,8 @@ export async function POST(req: Request) {
           }
         ];
 
-    console.log(`Usando il modello: ${model}`);
-    
     try {
+      console.log('Chiamata API a OpenRouter...');
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -100,6 +86,7 @@ export async function POST(req: Request) {
       }
       
       const data = await response.json();
+      console.log('Risposta ricevuta:', data);
       const text = data.choices?.[0]?.message?.content || 'Nessuna risposta generata.';
       return NextResponse.json({ text });
     } catch (apiErr) {
